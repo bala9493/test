@@ -3,5 +3,4 @@ jupyter
 pandas
 numpy
 lxml
-time
 warnings
