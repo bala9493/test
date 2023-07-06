@@ -3,4 +3,3 @@ jupyter
 pandas
 numpy
 lxml
-warnings
