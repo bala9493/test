@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.initiallyHidden
+{
+   display: none;
+}
+
+.pure-material-button-contained {
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 4px;
+    padding: 0 16px;
+    min-width: 64px;
+    height: 36px;
+    vertical-align: middle;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
+    background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    font-family: var(--pure-material-font, "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 36px;
+    overflow: hidden;
+    outline: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.pure-material-button-contained::-moz-focus-inner {
+    border: none;
+}
+
+/* Overlay */
+.pure-material-button-contained::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Ripple */
+.pure-material-button-contained::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    padding: 50%;
+    width: 32px; /* Safari */
+    height: 32px; /* Safari */
+    background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+    transition: opacity 1s, transform 0.5s;
+}
+
+/* Hover, Focus */
+.pure-material-button-contained:hover,
+.pure-material-button-contained:focus {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.pure-material-button-contained:hover::before {
+    opacity: 0.08;
+}
+
+.pure-material-button-contained:focus::before {
+    opacity: 0.24;
+}
+
+.pure-material-button-contained:hover:focus::before {
+    opacity: 0.3;
+}
+
+/* Active */
+.pure-material-button-contained:active {
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.pure-material-button-contained:active::after {
+    opacity: 0.32;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0s;
+}
+
+/* Disabled */
+.pure-material-button-contained:disabled {
+    color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);
+    background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.12);
+    box-shadow: none;
+    cursor: initial;
+}
+
+.pure-material-button-contained:disabled::before {
+    opacity: 0;
+}
+
+.pure-material-button-contained:disabled::after {
+    opacity: 0;
+}
+
+/* Center the loader */
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 } 
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom { 
+  from{ bottom:-100px; opacity:0 } 
+  to{ bottom:0; opacity:1 }
+}
+
+
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 12px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.found {
+  fill: #ff4136;
+  stroke: #ff4136;
+}
+
+.search {
+float: left;	
+padding: 5px;
+  font: 10px sans-serif;
+  width: 19%;
+}
+
+ul.select2-results {
+ max-height: 100px;
+}
+
+.select2-container,
+.select2-drop,
+.select2-search,
+.select2-search input {
+  font: 12px sans-serif;
+}
+
+#block_container {
+  display: inline;
+}
+
+div.tooltip {   
+  position: absolute;
+  padding: 8px;
+  text-align: left;
+  font: 12px sans-serif;
+  background: rgba(0, 0, 0, .87);
+  color: #fff;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;        
+}
+
+.clearfix:after {
+float: center;
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+.clearfix {
+    zoom: 1;     /* triggers hasLayout */
+}
+
+
+.searchMulti {
+float: left;	
+padding: 5px;
+  font: 12px sans-serif;
+  width: 19%;
+}
+
+.searchWWID {
+float: left;	
+padding: 5px;
+  font: 12px sans-serif;
+  width: 19%;
+}
+
+.searchTitle {
+float: left;	
+padding: 5px;
+  font: 12px sans-serif;
+  width: 19%;
+}
+
+.searchCompany {
+float: left;	
+padding: 5px;
+  font: 12px sans-serif;
+  width: 19%;
+}
+
+.buttonContainer{
+float: right;
+}
+
+</style>
+<Title></Title>
+<body>
+ 
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.css"></link>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+<div id="block_container" class="clearfix">
+   <div id="multiSearchName"></div>
+   <div id="searchTitle"></div>
+   <div id="searchCompany"></div>
+   <div class="buttonContainer">
+   <button id="downloadResultsButton" class="pure-material-button-contained initiallyHidden" style="float:left; margin-right:10px" onclick="downloadSearchResults()"><span>Download Search Results</span></button>
+    <button id="collapseAllButton" class="pure-material-button-contained initiallyHidden" onclick="collapseAllButton()"><span>Clear All</span></button>
+</div>
+</div>
+
+<div id="loader"></div>
+
+<script>
+
+var hashmap={}, searchID = '';
+var titleArray = [], departmentArray = [], idArray = [];
+
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+function downloadSearchResults()
+{
+	if(idArray.length > 0)
+	{
+		var fileContents = '"Name","Title","Department","Company Name","Email Address","Business Telephone","Business Address"\n';
+		idArray.forEach(function(element)
+		{
+			var employeeElement = hashmap[element];
+			var employeeDetails = '"';
+			employeeDetails += employeeElement['name'] + '","' + employeeElement['title'] + '","' + employeeElement['department'] + '","' + employeeElement['companyName'] + '","' + employeeElement['emailAddress'] + '","' + employeeElement['businessTelephone'] + '","' + employeeElement['businessAddress'] + '"\n';
+			fileContents = fileContents + employeeDetails;
+		});
+		download('Org Tree Search Results.csv', fileContents);
+	}
+	else
+	{
+		console.log('A search will have to be made in the first place!');
+	}
+}
+//===============================================
+function select2DataCollectName(d) 
+{
+	hashmap[d.wwid] = d;
+	d.parent = d.parent||hashmap[d.supervisorWWID];
+	
+    if (d.children)
+        d.children.forEach(select2DataCollectName);
+    else if (d._children)
+        d._children.forEach(select2DataCollectName);
+		
+    select2Data.push({id:d.wwid,text:d.name});
+}
+
+function select2DataCollectName_WWID(d) 
+{
+    if (d.children)
+        d.children.forEach(select2DataCollectName_WWID);
+    else if (d._children)
+        d._children.forEach(select2DataCollectName_WWID);
+    select2Data_WWID.push({id:d.wwid,text:d.wwid});
+}
+
+function select2DataCollectName_Title(d) {
+    if (d.children)
+        d.children.forEach(select2DataCollectName_Title);
+    else if (d._children)
+        d._children.forEach(select2DataCollectName_Title);
+    select2Data_Title.push(d.title);
+	titleArray.push({id:d.wwid,text:d.title});
+}
+
+function select2DataCollectName_Company(d) {
+    if (d.children)
+        d.children.forEach(select2DataCollectName_Company);
+    else if (d._children)
+        d._children.forEach(select2DataCollectName_Company);
+    select2Data_Company.push(d.companyName);
+	departmentArray.push({id:d.wwid,text:d.companyName})
+}
+
+//===============================================
+
+function searchTree(){
+		var d = hashmap[searchID];
+        // Walk parent chain
+        var ancestors = [];
+        var parent = d;
+        while (typeof(parent) !== "undefined") 
+		{
+            ancestors.push(parent);
+		//console.log(parent);
+            parent.class = "found";
+            parent = parent.parent;
+        }
+	    //console.log(ancestors);
+}
+
+function searchTreeTitle(){
+		idArray.forEach(function(element)
+		{
+		var d=hashmap[element];
+        var ancestors = [];
+        var parent = d;
+        while (typeof(parent) !== "undefined") 
+		{
+            ancestors.push(parent);
+		//console.log(parent);
+            parent.class = "found";
+            parent = parent.parent;
+        }
+	    //console.log(ancestors);
+		}); 
+}
+
+//===============================================
+function clearAll(d) {
+    d.class = "";
+    if (d.children)
+        d.children.forEach(clearAll);
+    else if (d._children)
+        d._children.forEach(clearAll);
+}
+
+//===============================================
+function collapse(d) {
+    if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+    }
+}
+
+//===============================================
+function collapseAllNotFound(d) {
+    if (d._children) {
+    	if (d.children && d.class !== "found") {
+        	d._children = d.children;
+        	d._children.forEach(collapseAllNotFound);
+        	d.children = null;
+	} else if(d.children)
+        	d.children.forEach(collapseAllNotFound);
+    }
+}
+
+//===============================================
+function expandAll(d) {
+    if (d._children) {
+        d.children = d._children;
+        d.children.forEach(expandAll);
+        //d._children = null;
+    } else if (d.children)
+        d.children.forEach(expandAll);
+}
+
+//===============================================
+// Toggle children on click.
+function toggle(d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    //d._children = null;
+  }
+  clearAll(root);
+  update(d);
+  $("#searchName").select2("val", "");
+  $("#searchWWID").select2("val", "");
+  $("#searchTitle").select2("val", "");
+  $("#searchCompany").select2("val", "");
+  $("#multiSearchName").select2("val", "");
+  idArray = [];
+}
+
+
+
+//===============================================
+$("#searchName").on("select2-selecting", function(e) {
+$("#multiSearchName").select2("val", "");
+$("#searchWWID").select2("val", "");
+  $("#searchTitle").select2("val", "");
+  $("#searchCompany").select2("val", "");
+
+   clearAll(root);
+	expandAll(root);
+    searchField = "d.name";
+    searchText = e.object.text;
+	searchID = e.object.id;
+    searchTree(root);
+    root.children.forEach(collapseAllNotFound);
+    update(root);
+})
+
+$('#multiSearchName').on("change", function(e) {
+    $("#searchName").select2("val", "");
+	$("#searchWWID").select2("val", "");
+	$("#searchTitle").select2("val", "");
+	$("#searchCompany").select2("val", "");
+	
+	clearAll(root);
+	expandAll(root);
+	idArray = [];
+	idArray = e["val"];
+	searchTreeTitle(root);
+    root.children.forEach(collapseAllNotFound);
+    update(root);
+  });
+
+function displayLoadingAnimation()
+{
+document.getElementById("loader").style.display = "block";
+};
+
+
+
+function hideLoadingAnimation()
+{
+document.getElementById("loader").style.display = "none";
+//$('#buttonContainer').slideDown(500);
+//$('#buttonContainer').removeClass('initiallyHidden');
+//$('#downloadResultsButton').removeClass('initiallyHidden');
+//document.getElementById("collapseAllButton").style.display = "inline-block";
+//document.getElementById("downloadResultsButton").style.display = "inline-block";
+};
+
+$("#searchWWID").on("select2-selecting", function(e) {
+$("#multiSearchName").select2("val", "");
+$("#searchName").select2("val", "");
+  $("#searchTitle").select2("val", "");
+  $("#searchCompany").select2("val", "");
+
+  clearAll(root);
+	expandAll(root);
+    searchField = "d.wwid";
+    searchText = e.object.text;
+	searchID = e.object.id;
+    searchTree(root);
+    root.children.forEach(collapseAllNotFound);
+    update(root);
+})
+
+$("#searchTitle").on("select2-selecting", function(e) {
+$("#multiSearchName").select2("val", "");
+$("#searchName").select2("val", "");
+  $("#searchWWID").select2("val", "");
+  $("#searchCompany").select2("val", "");
+    
+	clearAll(root);
+	expandAll(root);
+    searchField = "d.title";
+    searchText = e.object.text;
+	idArray = [];
+  titleGroupedArray[searchText].forEach(function(key)
+  {
+  idArray.push(key.id);
+  });
+	searchTreeTitle(root);
+    root.children.forEach(collapseAllNotFound);
+    update(root);
+})
+
+$("#searchCompany").on("select2-selecting", function(e) {
+$("#multiSearchName").select2("val", "");
+$("#searchName").select2("val", "");
+  $("#searchWWID").select2("val", "");
+  $("#searchTitle").select2("val", "");
+    clearAll(root);
+	expandAll(root);
+    searchField = "d.title";
+    searchText = e.object.text;
+	idArray = [];
+  departmentGroupedArray[searchText].forEach(function(key)
+  {
+  idArray.push(key.id);
+  });
+	searchTreeTitle(root);
+    root.children.forEach(collapseAllNotFound);
+    update(root);
+})
+
+//===============================================
+
+function expandButton(d){   
+    var children = (d.children)?d.children:d._children;
+    if (d._children) {        
+        d.children = d._children;
+        //d._children = null;       
+    }
+    if(children)
+      children.forEach(expandButton);
+}
+
+function expandAllButton(){
+    expandButton(root); 
+    update(root);
+}
+
+function collapseAllButton(){
+$("#searchName").select2("val", "");
+  $("#searchWWID").select2("val", "");
+  $("#searchTitle").select2("val", "");
+  $("#searchCompany").select2("val", "");
+  $("#multiSearchName").select2("val", "");
+    root.children.forEach(collapse);
+    collapse(root);
+    update(root);
+	idArray = [];
+}
+
+
+
+var margin = {top: 20, right: 120, bottom: 20, left: 120},
+    width = 3000 - margin.right - margin.left,
+    height = 800 - margin.top - margin.bottom;
+    
+var i = 0,
+    duration = 750,
+    root = [];
+
+var tree = d3.layout.tree()
+.size([height, width]);
+	
+	
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + 2*margin.left + "," + margin.top + ")");
+	
+var div = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+
+d3.json("placeholder", function(error, flare) {
+document.getElementById("loader").style.display = "none";
+document.getElementById("collapseAllButton").style.display = "block";
+document.getElementById("downloadResultsButton").style.display = "block";
+  //root = flare;
+  root = root[0];
+  root.x0 = height / 2;
+  root.y0 = 0;
+
+  select2Data = [];
+  select2DataCollectName(root);
+  select2DataObject = [];
+  select2Data.sort(function(a, b) {
+            if (a.text > b.text) return 1; // sort
+            if (a.text < b.text) return -1;
+            return 0;
+        })
+        .filter(function(item, i, ar) {
+            return ar.indexOf(item) === i;
+        }) // remove duplicate items
+        .filter(function(item, i, ar) {
+            select2DataObject.push(item);
+        });
+  $("#searchName").select2({
+  placeholder: "Search by Name",
+        data: select2DataObject,
+        containerCssClass: "search",
+		query: function(q) {
+      var pageSize,
+        results,
+        that = this;
+      pageSize = 20; // or whatever pagesize
+      results = [];
+      if (q.term && q.term !== '') {
+        // HEADS UP; for the _.filter function i use underscore (actually lo-dash) here
+        //results = _.filter(that.data, function(e) {
+          //return e.text.toUpperCase().indexOf(q.term.toUpperCase()) >= 0;
+        //});
+		results = that.data.filter(function(e){
+		intermediate = e.text.toUpperCase().lastIndexOf(q.term.toUpperCase()) >= 0;
+		return intermediate;
+		});
+      } else if (q.term === '') {
+        results = that.data;
+      }
+      q.callback({
+        results: results.slice((q.page - 1) * pageSize, q.page * pageSize),
+        more: results.length >= q.page * pageSize,
+      });
+    }
+  });
+  
+  
+  
+  $("#multiSearchName").select2({
+  placeholder: "Multiple Name Search",
+  multiple: true,
+  allowClear: true,
+        data: select2DataObject,
+        containerCssClass: "searchMulti",
+		query: function(q) {
+      var pageSize,
+        results,
+        that = this;
+      pageSize = 20;
+      results = [];
+      if (q.term && q.term !== '') {
+		results = that.data.filter(function(e){
+		intermediate = e.text.toUpperCase().lastIndexOf(q.term.toUpperCase()) >= 0;
+		return intermediate;
+		});
+      } else if (q.term === '') {
+        results = that.data;
+      }
+      q.callback({
+        results: results.slice((q.page - 1) * pageSize, q.page * pageSize),
+        more: results.length >= q.page * pageSize,
+      });
+    }
+  });
+  
+ 
+  
+  
+  
+  select2Data_Title = [];
+  select2DataCollectName_Title(root);
+  select2DataObject_Title = [];
+  titleGroupedArray = _.groupBy(titleArray,'text');
+  select2Data_Title.sort(function(a, b) {
+            if (a > b) return 1; // sort
+            if (a < b) return -1;
+            return 0;
+        })
+        .filter(function(item, i, ar) {
+            return ar.indexOf(item) === i;
+        }) // remove duplicate items
+        .filter(function(item, i, ar) {
+            select2DataObject_Title.push({
+                "id": i,
+                "text": item
+            });
+        });
+	select2DataObject_Title.shift()
+	//select2DataObject_Title.shift()
+  $("#searchTitle").select2({
+  //minimumInputLength: 1,
+    placeholder: "Search by Designation",
+        data: select2DataObject_Title,
+        containerCssClass: "searchTitle",
+		query: function(q) {
+      var pageSize,
+        results,
+        that = this;
+      pageSize = 20; // or whatever pagesize
+      results = [];
+      if (q.term && q.term !== '') {
+        // HEADS UP; for the _.filter function i use underscore (actually lo-dash) here
+        //results = _.filter(that.data, function(e) {
+          //return e.text.toUpperCase().indexOf(q.term.toUpperCase()) >= 0;
+        //});
+		results = that.data.filter(function(e){
+		intermediate = e.text.toUpperCase().lastIndexOf(q.term.toUpperCase()) >= 0;
+		return intermediate;
+		});
+      } else if (q.term === '') {
+        results = that.data;
+      }
+      q.callback({
+        results: results.slice((q.page - 1) * pageSize, q.page * pageSize),
+        more: results.length >= q.page * pageSize,
+      });
+    }
+  });
+  
+  
+  select2Data_Company = [];
+  select2DataCollectName_Company(root);
+  select2DataObject_Company = [];
+  departmentGroupedArray = _.groupBy(departmentArray,'text');
+  select2Data_Company.sort(function(a, b) {
+			if (a > b) return 1; // sort
+            if (a < b) return -1;
+            return 0;
+        })
+        .filter(function(item, i, ar) {
+            return ar.indexOf(item) === i;
+        }) // remove duplicate items
+        .filter(function(item, i, ar) {
+            select2DataObject_Company.push({	
+                "id": i,
+                "text": item
+            });
+        });
+  $("#searchCompany").select2({
+  //minimumInputLength: 1,
+    placeholder: "Search by Company Name",
+        data: select2DataObject_Company,
+        containerCssClass: "searchCompany",
+		query: function(q) {
+      var pageSize,
+        results,
+        that = this;
+      pageSize = 20; // or whatever pagesize
+      results = [];
+      if (q.term && q.term !== '') {
+        // HEADS UP; for the _.filter function i use underscore (actually lo-dash) here
+        //results = _.filter(that.data, function(e) {
+          //return e.text.toUpperCase().indexOf(q.term.toUpperCase()) >= 0;
+        //});
+		results = that.data.filter(function(e){
+		intermediate = e.text.toUpperCase().lastIndexOf(q.term.toUpperCase()) >= 0;
+		return intermediate;
+		});
+      } else if (q.term === '') {
+        results = that.data;
+      }
+      q.callback({
+        results: results.slice((q.page - 1) * pageSize, q.page * pageSize),
+        more: results.length >= q.page * pageSize,
+      });
+    }
+  });
+ 
+
+  function collapse(d) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(collapse);
+      d.children = null;
+    }
+  }
+
+  root.children.forEach(collapse);
+  update(root);
+});
+
+d3.select(self.frameElement).style("height", "800px");
+
+//===================================================================
+//===================================================================
+	
+function update(source) {
+
+var newHeight = Math.max(tree.nodes(root).reverse().length * 15, height);
+//var newWidth = Math.max(tree.nodes(root).reverse().length * 20, width);
+
+  d3.select("svg")
+  .attr("height", newHeight + margin.top + margin.bottom)
+
+  tree = d3.layout.tree().size([newHeight, width]);
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+      links = tree.links(nodes);
+
+  // Normalize for fixed-depth.
+  nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+  // Update the nodes…
+  var node = svg.selectAll("g.node")
+      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+  // Enter any new nodes at the parent's previous position.
+  var nodeEnter = node.enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+      .on("click", toggle);
+
+  nodeEnter.append("circle")
+      .attr("r", 1e-6)
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+  nodeEnter.append("text")
+      .attr("x", function(d) { return d.children || d._children ? -10 : -10; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "end"; })
+      .text(function(d) { return d.name; })
+      .style("fill-opacity", 1e-6)
+	  .on("mouseover", function(d) {      
+            div.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            div .html("Name: " + d.name + "<BR><HR>Title: " + d.title + "<BR><HR>Department: " + d.department + "<BR><HR>Company Name: " + d.companyName + "<BR><HR>Email: " + d.emailAddress + "<BR><HR>Contact: " + d.businessTelephone + "<BR><HR>Business Address: " + d.businessAddress + "<BR><HR>Partner Company: " + d.partnerCompanyName)  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px");    
+            })                  
+        .on("mouseout", function(d) {       
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+        });
+	
+
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+  nodeUpdate.select("circle")
+      .attr("r", 4.5)
+      .style("fill", function(d) {
+            if (d.class === "found") {
+                return "#ff4136"; //red
+            } else if (d._children) {
+                return "lightsteelblue";
+            } else {
+                return "#fff";
+            }
+        })
+        .style("stroke", function(d) {
+            if (d.class === "found") {
+                return "#ff4136"; //red
+            }
+        });
+
+  nodeUpdate.select("text")
+      .style("fill-opacity", 1);
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+      .remove();
+
+  nodeExit.select("circle")
+      .attr("r", 1e-6);
+
+  nodeExit.select("text")
+      .style("fill-opacity", 1e-6);
+
+  // Update the links…
+  var link = svg.selectAll("path.link")
+      .data(links, function(d) { return d.target.id; });
+
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("path", "g")
+      .attr("class", "link")
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: source.y0};
+        return diagonal({source: o, target: o});
+      });
+
+  // Transition links to their new position.
+  link.transition()
+      .duration(duration)
+      .attr("d", diagonal)
+      .style("stroke", function(d) {
+            if (d.target.class === "found") {
+                return "#ff4136";
+            }
+        });
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+      .duration(duration)
+      .attr("d", function(d) {
+        var o = {x: source.x, y: source.y};
+        return diagonal({source: o, target: o});
+      })
+      .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+    d.x0 = d.x;
+    d.y0 = d.y;
+  });
+}
+
+</script>
+
+</body
